@@ -11,12 +11,8 @@ VS Code は汎用的なエディターで、コーディングだけでなく文
 
 1. **Visual Studio Code (VS Code) をインストール**  
    - https://code.visualstudio.com
-   - Windows なら `winget` コマンドで簡単にインストールできます。
-     ```
-     winget install Microsoft.VisualStudioCode
-     ```
 2. **VS Code を開く**
-   - 方法1: スタートメニューから VS Code を起動して、`File` メニュー → `Open Folder` でこのフォルダを選択
+   - 方法1: スタートメニューから VS Code を起動して、`File` → `Open Folder` でこのフォルダを選択
    - 方法2: Terminal でこのフォルダに移動して、`code .` と入力して Enter
    - 方法3: Explorer でこのフォルダを開き、アドレス欄に `code .` と入力して Enter **★オススメ**
 3. **GitHug Copilot の有効化**

@@ -234,34 +234,22 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        margin-top: 2px;
       }
 
       .step-list .sub-list {
-        list-style: none;
-        margin-top: 8px;
-        padding-left: 0;
+        list-style: disc;
+        margin-top: 1em;
+        padding-left: 1.2em;
       }
 
       .step-list .sub-list li {
         counter-increment: none;
-        display: flex;
-        margin-bottom: 4px;
-        align-items: flex-start;
+        display: list-item;
+        margin-bottom: 6px;
       }
 
       .step-list .sub-list li::before {
-        content: "›";
-        background: none;
-        color: #667eea;
-        font-size: 1.2rem;
-        min-width: 18px;
-        height: auto;
-        font-weight: 900;
-        border-radius: 0;
-        margin-top: 0;
-        line-height: 1.75;
-        flex-shrink: 0;
+        content: none;
       }
 
       /* ===== Tables ===== */
@@ -387,34 +375,19 @@
       }
 
       ol.op-steps {
-        padding-left: 0;
-        list-style: none;
-        counter-reset: opcount;
+        padding-left: 1.4em;
+        list-style: decimal;
       }
 
       ol.op-steps li {
-        counter-increment: opcount;
-        display: flex;
-        gap: 10px;
+        display: list-item;
         margin-bottom: 8px;
-        align-items: flex-start;
         font-size: 0.88rem;
+        line-height: 1.7;
       }
 
       ol.op-steps li::before {
-        content: counter(opcount);
-        background: linear-gradient(135deg, #0078d4, #6b48ff);
-        color: #fff;
-        font-weight: 700;
-        font-size: 0.75rem;
-        min-width: 22px;
-        height: 22px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        margin-top: 2px;
+        content: none;
       }
 
       /* ===== Code Blocks ===== */
@@ -553,7 +526,7 @@
       }
 
       .appendix-section ol.op-steps li::before {
-        background: linear-gradient(135deg, #f953c6, #b91d73);
+        content: none;
       }
 
       .appendix-section code {
@@ -606,21 +579,34 @@
         }
 
         .hero {
-          padding: 32px 48px 28px;
+          padding: 24px 24px 20px;
         }
         .content {
-          padding: 24px 48px 36px;
+          padding: 18px 24px 24px;
         }
 
         .step-section,
-        .exercise-card {
-          page-break-inside: avoid;
-          break-inside: avoid;
+        .exercise-card,
+        .appendix-section {
+          page-break-inside: auto;
+          break-inside: auto;
+        }
+
+        pre,
+        pre code {
+          white-space: pre-wrap !important;
+          overflow-wrap: anywhere;
+          word-break: break-all;
+        }
+
+        pre {
+          max-width: 100%;
+          overflow: visible;
         }
 
         @page {
           size: A4;
-          margin: 12mm 14mm;
+          margin: 0;
         }
       }
     </style>
@@ -868,7 +854,6 @@
         <!-- ===== STEP 0 ===== -->
         <div class="step-section">
           <div class="step-header">
-            <div class="step-badge badge-0">0</div>
             <div>
               <div class="step-title-icon">⚙️</div>
               <div class="step-title-text">STEP 0 ― 事前準備（10分）</div>
@@ -933,10 +918,7 @@
                   ><br />
                   <a href="https://code.visualstudio.com" style="color: #0078d4"
                     >https://code.visualstudio.com</a
-                  ><br />
-                  Windows なら
-                  <code>winget</code> コマンドで簡単にインストールできます。
-                  <pre><code>winget install Microsoft.VisualStudioCode</code></pre>
+                  >
                 </div>
               </li>
               <li>
@@ -947,7 +929,7 @@
                       方法1: スタートメニューから VS Code を起動して、<code
                         >File</code
                       >
-                      メニュー → <code>Open Folder</code> でこのフォルダを選択
+                       → <code>Open Folder</code> でこのフォルダを選択
                     </li>
                     <li>
                       方法2: Terminal でこのフォルダに移動して、<code
@@ -986,7 +968,6 @@
         <!-- ===== STEP 1 ===== -->
         <div class="step-section">
           <div class="step-header">
-            <div class="step-badge badge-1">1</div>
             <div>
               <div class="step-title-icon">🎛️</div>
               <div class="step-title-text">
@@ -1036,7 +1017,6 @@
         <!-- ===== STEP 2 ===== -->
         <div class="step-section">
           <div class="step-header">
-            <div class="step-badge badge-2">2</div>
             <div>
               <div class="step-title-icon">💬</div>
               <div class="step-title-text">STEP 2 ― 基本的な使い方</div>
@@ -1139,7 +1119,6 @@
         <!-- ===== STEP 3 ===== -->
         <div class="step-section">
           <div class="step-header">
-            <div class="step-badge badge-3">3</div>
             <div>
               <div class="step-title-icon">🚀</div>
               <div class="step-title-text">STEP 3 ― 演習</div>

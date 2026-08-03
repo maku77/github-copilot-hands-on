@@ -1,0 +1,1625 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub Copilot ハンズオン</title>
+    <style>
+      /* ===== Reset & Base ===== */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP",
+          "Segoe UI", sans-serif;
+        background: #f0f2f8;
+        color: #1a1a2e;
+        line-height: 1.75;
+        font-size: 15px;
+      }
+
+      /* ===== Page Wrapper ===== */
+      .page {
+        max-width: 1230px;
+        margin: 0 auto;
+        background: #fff;
+        box-shadow: 0 4px 40px rgba(0, 0, 0, 0.12);
+      }
+
+      /* ===== Hero Header ===== */
+      .hero {
+        background: linear-gradient(
+          135deg,
+          #0d1117 0%,
+          #1a1a3e 40%,
+          #2d1b69 75%,
+          #0078d4 100%
+        );
+        padding: 48px 60px 40px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        gap: 32px;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            circle at 80% 30%,
+            rgba(107, 72, 255, 0.35) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 20% 80%,
+            rgba(0, 120, 212, 0.3) 0%,
+            transparent 45%
+          );
+        pointer-events: none;
+      }
+
+      .hero-text {
+        flex: 1;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+      }
+
+      .hero-title span {
+        background: linear-gradient(90deg, #7eb8f7, #b39dff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-sub {
+        margin-top: 10px;
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 0.95rem;
+        max-width: 480px;
+        line-height: 1.6;
+      }
+
+      .hero-badge {
+        display: inline-block;
+        margin-top: 16px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #a8d5ff;
+        font-size: 0.78rem;
+        padding: 4px 14px;
+        border-radius: 999px;
+        letter-spacing: 0.06em;
+      }
+
+      .hero-char {
+        position: relative;
+        z-index: 1;
+        flex-shrink: 0;
+      }
+
+      /* ===== Main Content ===== */
+      .content {
+        padding: 40px 60px 56px;
+      }
+
+      /* ===== Section Cards (STEP) ===== */
+      .step-section {
+        margin-bottom: 36px;
+        border-radius: 16px;
+        border: 1.5px solid #e2e8f0;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      }
+
+      .step-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 18px 24px;
+        background: linear-gradient(90deg, #f8faff 0%, #eef3ff 100%);
+        border-bottom: 1.5px solid #e2e8f0;
+      }
+
+      .step-badge {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        color: #fff;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .badge-0 {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+      }
+      .badge-1 {
+        background: linear-gradient(135deg, #0078d4, #00b4d8);
+      }
+      .badge-2 {
+        background: linear-gradient(135deg, #11998e, #38ef7d);
+      }
+      .badge-3 {
+        background: linear-gradient(135deg, #f7971e, #ffd200);
+      }
+      .badge-ex {
+        background: linear-gradient(135deg, #f953c6, #b91d73);
+      }
+
+      .step-title-text {
+        display: inline;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #1a1a2e;
+      }
+
+      .step-title-icon {
+        display: inline;
+        font-size: 2rem;
+      }
+      .step-mini-char {
+        margin-left: auto;
+        opacity: 0.85;
+      }
+
+      .step-body {
+        padding: 24px;
+      }
+
+      .step-body p {
+        margin-bottom: 12px;
+      }
+      .step-body p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* ===== Intro box ===== */
+      .intro-box {
+        background: linear-gradient(135deg, #f0f4ff 0%, #f8f0ff 100%);
+        border: 1.5px solid #c9d8ff;
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin-bottom: 36px;
+        font-size: 0.95rem;
+        color: #2d3561;
+        line-height: 1.8;
+      }
+
+      /* ===== Ordered Steps (STEP 0) ===== */
+      .step-list {
+        list-style: none;
+        counter-reset: stepcount;
+      }
+
+      .step-list li {
+        counter-increment: stepcount;
+        display: flex;
+        gap: 14px;
+        margin-bottom: 16px;
+        align-items: flex-start;
+      }
+
+      .step-list li::before {
+        content: counter(stepcount);
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.85rem;
+        min-width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      .step-list .sub-list {
+        list-style: none;
+        margin-top: 8px;
+        padding-left: 0;
+      }
+
+      .step-list .sub-list li {
+        counter-increment: none;
+        display: flex;
+        margin-bottom: 4px;
+        align-items: flex-start;
+      }
+
+      .step-list .sub-list li::before {
+        content: "›";
+        background: none;
+        color: #667eea;
+        font-size: 1.2rem;
+        min-width: 18px;
+        height: auto;
+        font-weight: 900;
+        border-radius: 0;
+        margin-top: 0;
+        line-height: 1.75;
+        flex-shrink: 0;
+      }
+
+      /* ===== Tables ===== */
+      .table-wrap {
+        overflow-x: auto;
+        margin: 12px 0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+      }
+
+      thead tr {
+        background: linear-gradient(90deg, #1a1a3e, #0078d4);
+        color: #fff;
+      }
+      thead th {
+        padding: 11px 14px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.85rem;
+        letter-spacing: 0.03em;
+      }
+
+      tbody tr:nth-child(even) {
+        background: #f5f8ff;
+      }
+      tbody tr:hover {
+        background: #eef3ff;
+      }
+      tbody td {
+        padding: 10px 14px;
+        border-bottom: 1px solid #e8ecf5;
+        vertical-align: top;
+      }
+
+      /* ===== Hint Cards ===== */
+      .hint-card {
+        background: #fffbf0;
+        border: 1.5px solid #ffe58f;
+        border-left: 4px solid #ffc53d;
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin: 14px 0;
+        font-size: 0.9rem;
+      }
+
+      .hint-card .hint-title {
+        font-weight: 700;
+        color: #b7791f;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* ===== Exercise Cards ===== */
+      .exercise-card {
+        background: #fff;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 14px;
+        overflow: hidden;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      .exercise-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 20px;
+        background: linear-gradient(90deg, #1a1a3e 0%, #2d1b69 100%);
+        color: #fff;
+      }
+
+      .ex-num {
+        background: linear-gradient(135deg, #f7971e, #ffd200);
+        color: #1a1a2e;
+        font-weight: 900;
+        font-size: 0.8rem;
+        padding: 3px 10px;
+        border-radius: 999px;
+      }
+
+      .ex-title {
+        font-weight: 700;
+        font-size: 1rem;
+      }
+
+      .exercise-body {
+        padding: 18px 20px;
+        font-size: 0.9rem;
+      }
+
+      .exercise-body p {
+        margin-bottom: 10px;
+      }
+
+      .op-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        color: #2d3561;
+        margin: 14px 0 8px;
+        font-size: 0.88rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .op-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #c9d8ff;
+      }
+
+      ol.op-steps {
+        padding-left: 0;
+        list-style: none;
+        counter-reset: opcount;
+      }
+
+      ol.op-steps li {
+        counter-increment: opcount;
+        display: flex;
+        gap: 10px;
+        margin-bottom: 8px;
+        align-items: flex-start;
+        font-size: 0.88rem;
+      }
+
+      ol.op-steps li::before {
+        content: counter(opcount);
+        background: linear-gradient(135deg, #0078d4, #6b48ff);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.75rem;
+        min-width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      /* ===== Code Blocks ===== */
+      pre {
+        background: #1e1e2e;
+        color: #cdd6f4;
+        border-radius: 10px;
+        padding: 36px 18px 16px;
+        font-family:
+          "JetBrains Mono", "Fira Code", "Cascadia Code", "Consolas", monospace;
+        font-size: 0.82rem;
+        line-height: 1.6;
+        overflow-x: auto;
+        margin: 10px 0;
+        position: relative;
+      }
+
+      pre::before {
+        content: "";
+        position: absolute;
+        top: 12px;
+        left: 14px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #ff5f57;
+        box-shadow:
+          16px 0 0 #febc2e,
+          32px 0 0 #28c840;
+      }
+
+      pre code {
+        padding-top: 0;
+        display: block;
+      }
+
+      code {
+        background: #f0f4ff;
+        color: #3d52d5;
+        padding: 2px 7px;
+        border-radius: 5px;
+        font-family: "JetBrains Mono", "Consolas", monospace;
+        font-size: 0.88em;
+      }
+
+      pre code {
+        background: none;
+        color: inherit;
+        padding: 0;
+        border-radius: 0;
+        font-size: 1em;
+      }
+
+      /* ===== Markdown sample block ===== */
+      .md-sample {
+        background: #1e1e2e;
+        color: #cdd6f4;
+        border-radius: 10px;
+        padding: 36px 18px 16px;
+        font-family: "JetBrains Mono", "Consolas", monospace;
+        font-size: 0.82rem;
+        line-height: 1.7;
+        margin: 10px 0;
+        position: relative;
+      }
+
+      .md-sample::before {
+        content: "";
+        position: absolute;
+        top: 12px;
+        left: 14px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #ff5f57;
+        box-shadow:
+          16px 0 0 #febc2e,
+          32px 0 0 #28c840;
+      }
+
+      .md-h1 {
+        color: #cba6f7;
+        font-weight: 700;
+      }
+      .md-h2 {
+        color: #89b4fa;
+        font-weight: 700;
+      }
+      .md-li {
+        color: #a6e3a1;
+      }
+      .md-str {
+        color: #f9e2af;
+      }
+      .md-comment {
+        color: #6c7086;
+        font-style: italic;
+      }
+      .md-fm {
+        color: #6c7086;
+      }
+      .md-key {
+        color: #89dceb;
+      }
+
+      /* ===== Appendix ===== */
+      .appendix-section {
+        background: linear-gradient(135deg, #0d1117 0%, #1a1a3e 100%);
+        border-radius: 16px;
+        padding: 28px 28px 24px;
+        color: #e2e8f0;
+        margin-bottom: 8px;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      .appendix-section h2 {
+        color: #7eb8f7;
+        font-size: 1.1rem;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .appendix-section p {
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+        color: #a8c0d8;
+        line-height: 1.7;
+      }
+
+      .appendix-section pre {
+        background: #0d1117;
+        border: 1px solid #30363d;
+      }
+
+      .appendix-section ol.op-steps li::before {
+        background: linear-gradient(135deg, #f953c6, #b91d73);
+      }
+
+      .appendix-section code {
+        background: rgba(255, 255, 255, 0.1);
+        color: #c4b5fd;
+      }
+
+      /* ===== TBD Badge ===== */
+      .tbd-badge {
+        display: inline-block;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        color: #fff;
+        font-size: 0.75rem;
+        padding: 3px 12px;
+        border-radius: 999px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        margin-left: 8px;
+      }
+
+      /* ===== Footer ===== */
+      .footer {
+        text-align: center;
+        padding: 20px 48px 24px;
+        font-size: 0.78rem;
+        color: #8896a8;
+        border-top: 1px solid #e2e8f0;
+      }
+
+      /* ===== Strong / em ===== */
+      strong {
+        color: #2d3561;
+      }
+
+      /* ===== Print ===== */
+      @media print {
+        * {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        body {
+          background: #fff;
+          font-size: 13px;
+        }
+
+        .page {
+          max-width: 100%;
+          box-shadow: none;
+        }
+
+        .hero {
+          padding: 32px 48px 28px;
+        }
+        .content {
+          padding: 24px 48px 36px;
+        }
+
+        .step-section,
+        .exercise-card {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+
+        @page {
+          size: A4;
+          margin: 12mm 14mm;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <!-- ===== HERO ===== -->
+      <header class="hero">
+        <div class="hero-text">
+          <div class="hero-title">
+            GitHub <span>Copilot</span><br />ハンズオン
+          </div>
+          <p class="hero-sub">
+            GitHub Copilot の基本操作から演習まで、<br />
+            Visual Studio Code を使って体験してみましょう。
+          </p>
+          <span class="hero-badge">VS Code ✕ GitHub Copilot</span>
+        </div>
+        <div class="hero-char">
+          <!-- Copilot mascot robot (large) -->
+          <svg
+            width="130"
+            height="165"
+            viewBox="0 0 130 165"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <radialGradient id="headGrad" cx="50%" cy="40%" r="60%">
+                <stop offset="0%" stop-color="#3d5a99" />
+                <stop offset="100%" stop-color="#0d1b4b" />
+              </radialGradient>
+              <radialGradient id="eyeGlowL" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#ffffff" />
+                <stop offset="60%" stop-color="#7eb8f7" />
+                <stop offset="100%" stop-color="#0078d4" stop-opacity="0" />
+              </radialGradient>
+              <radialGradient id="eyeGlowR" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#ffffff" />
+                <stop offset="60%" stop-color="#b39dff" />
+                <stop offset="100%" stop-color="#6b48ff" stop-opacity="0" />
+              </radialGradient>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="2.5" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              <filter id="softGlow">
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            <!-- Antenna -->
+            <line
+              x1="65"
+              y1="10"
+              x2="65"
+              y2="30"
+              stroke="#7eb8f7"
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+            <!-- Star at antenna tip -->
+            <g transform="translate(65,7)" filter="url(#glow)">
+              <polygon
+                points="0,-7 2,-2 7,-2 3,2 5,7 0,4 -5,7 -3,2 -7,-2 -2,-2"
+                fill="#ffd200"
+                stroke="#ffb300"
+                stroke-width="0.5"
+              />
+            </g>
+
+            <!-- Head -->
+            <rect
+              x="20"
+              y="28"
+              width="90"
+              height="72"
+              rx="22"
+              fill="url(#headGrad)"
+            />
+            <!-- Head highlight -->
+            <ellipse
+              cx="50"
+              cy="40"
+              rx="20"
+              ry="10"
+              fill="rgba(255,255,255,0.08)"
+            />
+
+            <!-- Ear left -->
+            <rect x="10" y="50" width="13" height="24" rx="6" fill="#1a2d5a" />
+            <rect x="13" y="56" width="7" height="12" rx="3" fill="#0078d4" />
+            <!-- Ear right -->
+            <rect x="107" y="50" width="13" height="24" rx="6" fill="#1a2d5a" />
+            <rect x="110" y="56" width="7" height="12" rx="3" fill="#6b48ff" />
+
+            <!-- Eyes (left=blue, right=purple) -->
+            <ellipse cx="46" cy="58" rx="13" ry="13" fill="#0d1b4b" />
+            <ellipse
+              cx="46"
+              cy="58"
+              rx="13"
+              ry="13"
+              fill="url(#eyeGlowL)"
+              filter="url(#softGlow)"
+            />
+            <circle cx="46" cy="58" r="7" fill="#0078d4" />
+            <circle cx="46" cy="58" r="4" fill="#7eb8f7" />
+            <circle cx="44" cy="56" r="2" fill="#fff" opacity="0.9" />
+
+            <ellipse cx="84" cy="58" rx="13" ry="13" fill="#0d1b4b" />
+            <ellipse
+              cx="84"
+              cy="58"
+              rx="13"
+              ry="13"
+              fill="url(#eyeGlowR)"
+              filter="url(#softGlow)"
+            />
+            <circle cx="84" cy="58" r="7" fill="#6b48ff" />
+            <circle cx="84" cy="58" r="4" fill="#b39dff" />
+            <circle cx="82" cy="56" r="2" fill="#fff" opacity="0.9" />
+
+            <!-- Mouth -->
+            <path
+              d="M 50 80 Q 65 90 80 80"
+              stroke="#7eb8f7"
+              stroke-width="2.5"
+              fill="none"
+              stroke-linecap="round"
+            />
+
+            <!-- Neck -->
+            <rect x="55" y="100" width="20" height="10" rx="5" fill="#1a2d5a" />
+
+            <!-- Body -->
+            <rect
+              x="18"
+              y="110"
+              width="94"
+              height="52"
+              rx="18"
+              fill="linear-gradient(180deg,#1e2d5a,#0d1b4b)"
+            />
+            <rect
+              x="18"
+              y="110"
+              width="94"
+              height="52"
+              rx="18"
+              fill="#1e2d5a"
+            />
+            <!-- Body gradient overlay -->
+            <rect
+              x="18"
+              y="110"
+              width="94"
+              height="26"
+              rx="18"
+              fill="rgba(255,255,255,0.05)"
+            />
+
+            <!-- Copilot logo mark on body (simplified) -->
+            <g transform="translate(46,120)" filter="url(#glow)">
+              <!-- Outer ring -->
+              <circle
+                cx="19"
+                cy="16"
+                r="16"
+                fill="none"
+                stroke="#0078d4"
+                stroke-width="2"
+                opacity="0.7"
+              />
+              <!-- Inner split circles -->
+              <path
+                d="M 19 4 A 12 12 0 0 1 31 16 A 12 12 0 0 0 19 16 Z"
+                fill="#7eb8f7"
+                opacity="0.9"
+              />
+              <path
+                d="M 19 28 A 12 12 0 0 1 7 16 A 12 12 0 0 0 19 16 Z"
+                fill="#b39dff"
+                opacity="0.9"
+              />
+              <circle cx="19" cy="16" r="5" fill="#fff" opacity="0.95" />
+            </g>
+
+            <!-- Arms -->
+            <rect x="2" y="115" width="18" height="36" rx="9" fill="#1a2d5a" />
+            <circle cx="11" cy="151" r="9" fill="#1a2d5a" />
+            <rect
+              x="110"
+              y="115"
+              width="18"
+              height="36"
+              rx="9"
+              fill="#1a2d5a"
+            />
+            <circle cx="119" cy="151" r="9" fill="#1a2d5a" />
+
+            <!-- Legs -->
+            <rect
+              x="36"
+              y="160"
+              width="22"
+              height="5"
+              rx="2.5"
+              fill="#1a2d5a"
+            />
+            <rect
+              x="72"
+              y="160"
+              width="22"
+              height="5"
+              rx="2.5"
+              fill="#1a2d5a"
+            />
+          </svg>
+        </div>
+      </header>
+
+      <!-- ===== CONTENT ===== -->
+      <main class="content">
+        <!-- Intro -->
+        <div class="intro-box">
+          ここでは、GitHub Copilot
+          の基本的な操作方法を中心に、簡単な演習を通じて体験していただきます。
+          GitHub Copilot の実行環境として、<strong
+            >Visual Studio Code (VS Code)</strong
+          >
+          を使用します。 VS Code には GitHub Copilot
+          が統合されているため、追加の拡張機能をインストールせずに利用できます（2026年4月に完全統合）。
+          VS Code
+          は汎用的なエディターで、コーディングだけでなく文章作成など、さまざまな用途に活用できます。
+        </div>
+
+        <!-- ===== STEP 0 ===== -->
+        <div class="step-section">
+          <div class="step-header">
+            <div class="step-badge badge-0">0</div>
+            <div>
+              <div class="step-title-icon">⚙️</div>
+              <div class="step-title-text">STEP 0 ― 事前準備（10分）</div>
+            </div>
+            <!-- Mini robot -->
+            <div class="step-mini-char">
+              <svg
+                width="36"
+                height="46"
+                viewBox="0 0 130 165"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <line
+                  x1="65"
+                  y1="10"
+                  x2="65"
+                  y2="30"
+                  stroke="#7eb8f7"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                />
+                <polygon
+                  transform="translate(65,7)"
+                  points="0,-7 2,-2 7,-2 3,2 5,7 0,4 -5,7 -3,2 -7,-2 -2,-2"
+                  fill="#ffd200"
+                />
+                <rect
+                  x="20"
+                  y="28"
+                  width="90"
+                  height="72"
+                  rx="22"
+                  fill="#1e2d5a"
+                />
+                <circle cx="46" cy="58" r="10" fill="#0078d4" />
+                <circle cx="46" cy="58" r="5" fill="#7eb8f7" />
+                <circle cx="43" cy="55" r="2.5" fill="#fff" />
+                <circle cx="84" cy="58" r="10" fill="#6b48ff" />
+                <circle cx="84" cy="58" r="5" fill="#b39dff" />
+                <circle cx="81" cy="55" r="2.5" fill="#fff" />
+                <rect
+                  x="18"
+                  y="110"
+                  width="94"
+                  height="52"
+                  rx="18"
+                  fill="#1e2d5a"
+                />
+              </svg>
+            </div>
+          </div>
+          <div class="step-body">
+            <p>
+              まずは、VS Code をインストールして、GitHub Copilot
+              をつかえる状態にしましょう。
+            </p>
+            <ul class="step-list">
+              <li>
+                <div>
+                  <strong>Visual Studio Code (VS Code) をインストール</strong
+                  ><br />
+                  <a href="https://code.visualstudio.com" style="color: #0078d4"
+                    >https://code.visualstudio.com</a
+                  ><br />
+                  Windows なら
+                  <code>winget</code> コマンドで簡単にインストールできます。
+                  <pre><code>winget install Microsoft.VisualStudioCode</code></pre>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>VS Code を開く</strong>
+                  <ul class="sub-list">
+                    <li>
+                      方法1: スタートメニューから VS Code を起動して、<code
+                        >File</code
+                      >
+                      メニュー → <code>Open Folder</code> でこのフォルダを選択
+                    </li>
+                    <li>
+                      方法2: Terminal でこのフォルダに移動して、<code
+                        >code .</code
+                      >
+                      と入力して Enter
+                    </li>
+                    <li>
+                      方法3: Explorer でこのフォルダを開き、アドレス欄に
+                      <code>code .</code> と入力して Enter
+                      <strong>★オススメ</strong>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>GitHub Copilot の有効化</strong>
+                  <ul class="sub-list">
+                    <li>VS Code 右下の GitHub Copilot アイコンをクリック</li>
+                    <li>
+                      初回だけ <code>Enable AI Features</code> →
+                      <code>Trust Folder &amp; Continue</code> を選択
+                    </li>
+                    <li>
+                      ブラウザで認証画面が表示されたら自分の GitHub
+                      アカウントでサインイン＆承諾
+                    </li>
+                  </ul>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- ===== STEP 1 ===== -->
+        <div class="step-section">
+          <div class="step-header">
+            <div class="step-badge badge-1">1</div>
+            <div>
+              <div class="step-title-icon">🎛️</div>
+              <div class="step-title-text">
+                STEP 1 ― VS Code 上での GitHub Copilot
+              </div>
+            </div>
+          </div>
+          <div class="step-body">
+            <p>
+              VS Code 組み込みの GitHub Copilot 機能は、主に下記の 2
+              種類の操作を起点として動作します。
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>起動方法</th>
+                    <th>特徴</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>🔵 インライン補完機能</td>
+                    <td>自動（ファイル編集）</td>
+                    <td>
+                      ファイルを編集しているだけで、リアルタイムに自動補完されます。補完内容は
+                      <code>Tab</code> で採用、<code>Esc</code> で却下します。
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>🟢 チャット機能</td>
+                    <td>
+                      <code>Ctrl+Alt+I</code>（または
+                      <code>Ctrl+I</code> でインラインチャット）
+                    </td>
+                    <td>
+                      チャットエリアを表示し、会話形式で任意の指示を出します。生成内容を確認しながら繰り返し修正できます。
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== STEP 2 ===== -->
+        <div class="step-section">
+          <div class="step-header">
+            <div class="step-badge badge-2">2</div>
+            <div>
+              <div class="step-title-icon">💬</div>
+              <div class="step-title-text">STEP 2 ― 基本的な使い方</div>
+            </div>
+          </div>
+          <div class="step-body">
+            <p>
+              インライン補完機能に関しては勝手に補完されるのを待つだけでよいので、ここではチャット機能を中心に説明します。
+            </p>
+
+            <p><strong>基本操作</strong></p>
+            <p>
+              最低限、下記の操作を覚えれば、チャット機能を使った編集作業ができるようになります。
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>操作</th>
+                    <th>キー</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>チャットパネルを開く / 閉じる</td>
+                    <td><code>Ctrl + Alt + I</code></td>
+                  </tr>
+                  <tr>
+                    <td>エディタ上でのインラインチャット（無効な場合あり）</td>
+                    <td><code>Ctrl + I</code></td>
+                  </tr>
+                  <tr>
+                    <td>提案コードを適用</td>
+                    <td><code>保持</code> ボタンをクリック</td>
+                  </tr>
+                  <tr>
+                    <td>過去履歴をクリア</td>
+                    <td>チャットで <code>/clear</code> と入力</td>
+                  </tr>
+                  <tr>
+                    <td>新しい会話を開始</td>
+                    <td>チャット上部の <code>＋</code> ボタンをクリック</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p><strong>使い方のポイント</strong></p>
+            <div class="hint-card">
+              <div class="hint-title">💡 生成内容を確認して修正を繰り返す</div>
+              チャットで指示を出すと、自動生成されたコードや文章の適用待ち状態になります。
+              Copilot の提案は無条件に採用せず、<strong
+                >内容を確認してから <code>保持</code> ボタン</strong
+              >
+              をクリックします。
+              気に入らなければ追加指示を出して何度でもやり直せます。
+            </div>
+
+            <div class="hint-card">
+              <div class="hint-title">💡 ファイルの参照を追加する</div>
+              チャット入力欄の
+              <strong><code>＋</code> アイコン</strong>
+              を押すか、ファイルをドラッグ＆ドロップすると、そのファイルの内容をコンテキストに含めることができます。
+              一時的に追加情報を与えて作業指示を出したいときに便利です。
+            </div>
+
+            <div class="hint-card">
+              <div class="hint-title">💡 ファイルの一部を処理</div>
+              エディタ上で範囲選択した状態でチャット入力すると、その内容がコンテキストに乗ります。
+              チャットパネルが開いていないときは、<strong
+                >範囲選択 → <code>Ctrl + Alt + I</code></strong
+              >
+              と入力することで、選択範囲の内容をコンテキストに含めた状態ですぐに指示を出せます。
+              特定範囲の
+              <strong
+                >文章の校正、文章の要約、コード解説、リファクタリング</strong
+              >
+              など、さまざまな場面で活用できます。
+            </div>
+
+            <div class="hint-card">
+              <div class="hint-title">
+                💡
+                別の処理をしたいときは会話履歴をクリアするか新しいセッションを開始する
+              </div>
+              チャットで連続して指示を出すと、過去の会話履歴（コンテキスト）を考慮してエージェントが動作するため、LLM
+              への入力トークンがどんどん増えていきます。
+              これまでの会話履歴をクリアして、新しい作業を開始したいときは、チャット欄に
+              <strong><code>/clear</code></strong> と入力します。
+              これにより、これまでと関係のない会話履歴が混ざるのを防げます。 LLM
+              への入力トークン数も減るため、利用コストの削減にもつながります。<br /><br />
+              これまでの会話履歴を残したまま新しいセッションを開始したいときは、チャット上部にある
+              <strong><code>＋</code> ボタン（新しいチャット）</strong>
+              を押します。
+              過去のセッションはセッションパネルで一覧表示でき、いつでも再開できます。
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== STEP 3 ===== -->
+        <div class="step-section">
+          <div class="step-header">
+            <div class="step-badge badge-3">3</div>
+            <div>
+              <div class="step-title-icon">🚀</div>
+              <div class="step-title-text">STEP 3 ― 演習</div>
+            </div>
+            <div class="step-mini-char">
+              <svg
+                width="36"
+                height="46"
+                viewBox="0 0 130 165"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <line
+                  x1="65"
+                  y1="10"
+                  x2="65"
+                  y2="30"
+                  stroke="#ffd200"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                />
+                <polygon
+                  transform="translate(65,7)"
+                  points="0,-7 2,-2 7,-2 3,2 5,7 0,4 -5,7 -3,2 -7,-2 -2,-2"
+                  fill="#ffd200"
+                />
+                <rect
+                  x="20"
+                  y="28"
+                  width="90"
+                  height="72"
+                  rx="22"
+                  fill="#2d1b00"
+                />
+                <circle cx="46" cy="58" r="10" fill="#f7971e" />
+                <circle cx="46" cy="58" r="5" fill="#ffd200" />
+                <circle cx="43" cy="55" r="2.5" fill="#fff" />
+                <circle cx="84" cy="58" r="10" fill="#ffd200" />
+                <circle cx="84" cy="58" r="5" fill="#fff9c4" />
+                <circle cx="81" cy="55" r="2.5" fill="#fff" />
+                <rect
+                  x="18"
+                  y="110"
+                  width="94"
+                  height="52"
+                  rx="18"
+                  fill="#2d1b00"
+                />
+              </svg>
+            </div>
+          </div>
+          <div class="step-body">
+            <p>
+              実際に手を動かして GitHub Copilot
+              のいろいろな使い方を試してみましょう。
+            </p>
+
+            <!-- Ex 1 -->
+            <div class="exercise-card">
+              <div class="exercise-header">
+                <span class="ex-num">演習 1</span>
+                <span class="ex-title">インライン補完で関数を生成する</span>
+              </div>
+              <div class="exercise-body">
+                <p>
+                  Python のソースコードファイル (<code>exercise/main.py</code>)
+                  を開いて、インライン補完機能で「フィボナッチ関数」を生成してください。
+                </p>
+                <div class="op-label">操作例</div>
+                <ol class="op-steps">
+                  <li>
+                    左のエクスプローラーから <code>main.py</code> を新規作成
+                  </li>
+                  <li>
+                    任意の行に
+                    <code># フィボナッチ関数</code> というコメントを入力
+                  </li>
+                  <li>
+                    しばらくすると関数の内容が薄く表示されるので
+                    <code>Tab</code> で採用
+                  </li>
+                </ol>
+                <div class="hint-card" style="margin-top: 12px">
+                  <div class="hint-title">💡 ヒント</div>
+                  補完機能が動作しない場合は、<code>Ctrl + I</code> や
+                  <code>Ctrl + Alt + I</code>
+                  でチャットパネルを開いて「実装して」と指示を出してしまうのが早いです。
+                </div>
+              </div>
+            </div>
+
+            <!-- Ex 2 -->
+            <div class="exercise-card">
+              <div class="exercise-header">
+                <span class="ex-num">演習 2</span>
+                <span class="ex-title">選択範囲の文章を修正する</span>
+              </div>
+              <div class="exercise-body">
+                <p>
+                  下記のようなまとまりのない議事録が Markdown ファイル
+                  (<code>exercise/議事録.md</code>) に書かれています。
+                  アクションアイテムを抽出し、担当者と期限を明確にした表に変換してください。
+                </p>
+                <div class="md-sample">
+                  <span class="md-h1"># 議事録</span><br />
+                  <br />
+                  <span class="md-h2">## 開催日</span><br />
+                  <br />
+                  2026年8月5日 19:00-19:30<br />
+                  <br />
+                  <span class="md-h2">## メモ</span><br />
+                  <br />
+                  <span class="md-li"
+                    >- 連休前なので臨時の報告会として開催。</span
+                  ><br />
+                  <span class="md-li"
+                    >-
+                    カメラで撮影した写真をテレビに表示するサービスの開発状況を確認したと田中さんが報告。転送遅延の問題が引き続き課題。</span
+                  ><br />
+                  <span class="md-li"
+                    >-
+                    遅延原因の調査結果を今週中にまとめて共有してほしい。</span
+                  ><br />
+                  <span class="md-li"
+                    >- UI
+                    デザインのたたき台は鈴木さんが担当。リモコン操作の画面遷移が未確定なので、来週中には案を出す。</span
+                  ><br />
+                  <span class="md-li"
+                    >-
+                    対応テレビの機種リストが古いため、山田さんが最新モデルへの対応可否を確認して更新する（今月中）。</span
+                  ><br />
+                  <span class="md-li"
+                    >-
+                    次回ミーティングは再来週に設定。それまでに各自タスクを進めておく。</span
+                  >
+                </div>
+                <div class="op-label">操作例</div>
+                <ol class="op-steps">
+                  <li>
+                    VS Code 上で
+                    <code>.md</code> ファイル内の該当箇所のテキストを範囲選択
+                  </li>
+                  <li>
+                    <code>Ctrl + I</code>
+                    を押してインラインチャットを開く（場合によっては独立したチャットウィンドウがアクティブになります）
+                  </li>
+                  <li>
+                    <div>
+                      次のように指示：
+                      <pre><code>アクションアイテムを抽出し、内容・担当者・期日(YYYY-MM-DD)を表にまとめてください。</code></pre>
+                    </div>
+                  </li>
+                </ol>
+              </div>
+            </div>
+
+            <!-- Ex 3 -->
+            <div class="exercise-card">
+              <div class="exercise-header">
+                <span class="ex-num">演習 3</span>
+                <span class="ex-title">スラッシュコマンドを使う</span>
+              </div>
+              <div class="exercise-body">
+                <p>
+                  チャットエリアにスラッシュコマンド (<code>/explain</code>)
+                  を入力すると、難しいコードの解説をしてもらえます。
+                  同様の指示を文章入力で行うこともできますが、こういったよく使う指示は組み込みのスラッシュコマンドとして用意されています。
+                </p>
+                <div class="op-label">操作例</div>
+                <ol class="op-steps">
+                  <li>
+                    Python コードの任意の範囲を選択（演習 1
+                    で作ったフィボナッチ関数など）
+                  </li>
+                  <li>
+                    <code>Ctrl + Alt + I</code> → <code>/explain</code> と入力
+                  </li>
+                  <li>チャットエリアに詳しい解説が表示されます</li>
+                </ol>
+              </div>
+            </div>
+
+            <!-- Ex 4 -->
+            <div class="exercise-card">
+              <div class="exercise-header">
+                <span class="ex-num">演習 4</span>
+                <span class="ex-title"
+                  >カスタムスラッシュコマンド（カスタムプロンプト）を作る</span
+                >
+              </div>
+              <div class="exercise-body">
+                <p>
+                  よく使うプロンプトは、カスタムプロンプト
+                  (<code>.github/prompts/*.prompt.md</code>)
+                  として定義しておくことができます。 スラッシュ (<code>/</code>)
+                  始まりのコマンドとして呼び出すことができるので、「スラッシュコマンド」とも呼ばれます。
+                </p>
+                <p>
+                  カスタムプロンプト用のファイルは手動で作成してもよいし、<strong
+                    ><code>/create-prompt</code></strong
+                  >
+                  スラッシュコマンドで自動生成することもできます（自動生成してから内容を修正するのがおすすめです）。
+                  ここでは、日本語文章を校正する
+                  <strong><code>/revise</code></strong>
+                  コマンドを作ってみましょう。
+                </p>
+                <div class="op-label">操作例</div>
+                <p>
+                  まず、<code>/create-prompt</code>
+                  スラッシュコマンドを使って、カスタムプロンプトの雛形ファイルを作成します。
+                  チャット欄に、次のように入力します。
+                </p>
+                <pre><code>/create-prompt 日本語文章の校正を行う revise スラッシュコマンドを日本語で作成してください。「。の後には必ず改行」というルールを含めてください。</code></pre>
+                <p>
+                  例:
+                  <code>.github/prompts/revise.prompt.md</code
+                  >（自動生成結果をマニュアル修正したもの）
+                </p>
+                <div class="md-sample">
+                  <span class="md-fm">---</span><br />
+                  <span class="md-key">name</span>:
+                  <span class="md-str">revise</span><br />
+                  <span class="md-key">description</span>:
+                  <span class="md-str"
+                    >日本語文章を自然で読みやすい表現に校正します。</span
+                  ><br />
+                  <span class="md-key">argument-hint</span>:
+                  <span class="md-str">校正したい日本語文章を入力</span><br />
+                  <span class="md-key">agent</span>:
+                  <span class="md-str">agent</span><br />
+                  <span class="md-fm">---</span><br />
+                  <br />
+                  入力された日本語文章を校正してください。<br />
+                  <br />
+                  要件:<br />
+                  <br />
+                  <span class="md-li"
+                    >-
+                    意味は変えず、誤字・脱字・不自然な言い回しを修正する。</span
+                  ><br />
+                  <span class="md-li"
+                    >- 分かりにくい文章は、適宜説明文を補う。</span
+                  ><br />
+                  <span class="md-li"
+                    >-
+                    フォーマルになりすぎない、自然で読みやすい日本語にする。</span
+                  ><br />
+                  <span class="md-li">- 「。の後には必ず改行」する。</span
+                  ><br />
+                  <br />
+                  実行手順:<br />
+                  <br />
+                  <span class="md-li"
+                    >-
+                    エディタで選択されている範囲がある場合は、その選択範囲を校正後本文で直接置換する。</span
+                  ><br />
+                  <span class="md-li"
+                    >-
+                    選択範囲がない場合は、ユーザーが入力した本文を校正対象として扱う。</span
+                  >
+                </div>
+                <p><strong>使い方</strong></p>
+                <ol class="op-steps">
+                  <li>エディタ上で、校正したい範囲を選択</li>
+                  <li>
+                    <code>Ctrl + I</code> あるいは
+                    <code>Ctrl + Alt + I</code> でチャットパネルを開き、<code
+                      >/revise</code
+                    >
+                    と入力して Enter
+                  </li>
+                  <li>
+                    エディタ上に指示どおり校正された文章が表示されます。内容がよければ、「保持」ボタンを押して反映します。
+                  </li>
+                </ol>
+              </div>
+            </div>
+
+            <!-- Ex 5 -->
+            <div class="exercise-card">
+              <div class="exercise-header">
+                <span class="ex-num">演習 5</span>
+                <span class="ex-title"
+                  >カスタムインストラクションを設定する</span
+                >
+              </div>
+              <div class="exercise-body">
+                <p>
+                  プロジェクト内で守るべき記述ルールや、常に守ってほしい方針がある場合は、下記のファイルにカスタムインストラクションとして記載します。
+                </p>
+                <p>例: <code>.github/copilot-instructions.md</code></p>
+                <pre><code>- お嬢様口調で話してください。
+- Python を使用する場合は、`pip` や `python` コマンドを使わずに、
+  `uv add` や `uv run` などの `uv` コマンドを使ってください。</code></pre>
+                <div class="hint-card">
+                  <div class="hint-title">💡 必要最小限にすること</div>
+                  この情報は、すべての会話のコンテキストに組み込まれるため、必要最小限にすることが推奨されています。
+                  不要な情報を含めると、入力トークンが増えてコストが上がり、LLM
+                  の応答精度が低下する原因になります。
+                </div>
+                <p>
+                  特定のファイルにのみ適用したいルールは、下記のような専用ファイル（<code>.github/instructions/*.instructions.md</code>）で定義します。
+                </p>
+                <p>
+                  例: <code>.github/instructions/python.instructions.md</code>
+                </p>
+                <div class="md-sample">
+                  <span class="md-fm">---</span><br />
+                  <span class="md-key">applyTo</span>:
+                  <span class="md-str">"**/*.py"</span><br />
+                  <span class="md-fm">---</span><br />
+                  <br />
+                  <span class="md-h1"># Python Coding Instructions</span><br />
+                  <br />
+                  <span class="md-h2">## Style</span><br />
+                  <span class="md-li"
+                    >- Use Python 3.10+ type hints with built-in generics: list,
+                    dict, tuple, set.</span
+                  ><br />
+                  <span class="md-li"
+                    >- Prefer clear, intention-revealing names for functions and
+                    variables.</span
+                  ><br />
+                  <span class="md-li"
+                    >- Keep each function focused on a single
+                    responsibility.</span
+                  ><br />
+                  <br />
+                  <span class="md-h2">## Documentation</span><br />
+                  <span class="md-li"
+                    >- Add docstrings to all public functions and classes.</span
+                  ><br />
+                  <span class="md-li"
+                    >- For non-trivial logic, add short comments explaining why,
+                    not what.</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Ex 6 -->
+            <div class="exercise-card">
+              <div class="exercise-header">
+                <span class="ex-num">演習 6</span>
+                <span class="ex-title">Plan モードで計画を立てる</span>
+              </div>
+              <div class="exercise-body">
+                <p>
+                  GitHub Copilot はデフォルトで Agent
+                  モードに設定されているため、指示を出すとすぐにファイルの編集作業を始めようとします。
+                  ある程度複雑な作業を行う場合は、まず「<strong
+                    >Plan モード</strong
+                  >」に切り替えて作業計画を立て、そのうえでエージェントに自律的な作業を任せると、後戻りが減って効率的です。
+                  手順が明確になっているため、ワンショットで作業を終えられる可能性も高まります（ご飯を食べに行って帰ってくると想定通りのものが完成している）。
+                </p>
+                <div class="op-label">操作例</div>
+                <ol class="op-steps">
+                  <li>
+                    チャットパネル下部の「エージェントの設定」メニュー（Agent/Ask/Plan
+                    のいずれかが表示）から、<strong><code>Plan</code></strong>
+                    モードに切り替えます。
+                  </li>
+                  <li>
+                    チャット欄に、計画を立てたい作業内容を入力して Enter
+                    を押します。
+                  </li>
+                  <li>
+                    作業計画の提案が表示されたら、必要に応じて情報を補い、計画をブラッシュアップします。
+                  </li>
+                  <li>
+                    計画ができたら「Autopilot
+                    を使用して開始する」をクリックすると、計画に沿った作業を自動で進められます。
+                  </li>
+                </ol>
+                <div class="hint-card">
+                  <div class="hint-title">
+                    💡 <code>/plan</code> スラッシュコマンドでも切り替え可能
+                  </div>
+                  現在のモードに関係なく計画用の指示を出せるので、慣れるとこちらの方が便利です。
+                  <pre><code>/plan 1つのHTMLファイルで構成された、シンプルなブロック崩しゲームを作成して。</code></pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ex 7 -->
+            <div class="exercise-card">
+              <div class="exercise-header">
+                <span class="ex-num">演習 7</span>
+                <span class="ex-title"
+                  >カスタムエージェント（ペルソナ）を作る
+                  <span class="tbd-badge">TBD</span></span
+                >
+              </div>
+              <div class="exercise-body">
+                <p style="color: #8896a8">この演習は現在準備中です。</p>
+              </div>
+            </div>
+
+            <!-- Ex 8 -->
+            <div class="exercise-card">
+              <div class="exercise-header">
+                <span class="ex-num">演習 8</span>
+                <span class="ex-title"
+                  >便利な Skills を作る <span class="tbd-badge">TBD</span></span
+                >
+              </div>
+              <div class="exercise-body">
+                <p style="color: #8896a8">この演習は現在準備中です。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /STEP 3 -->
+
+        <!-- ===== APPENDIX ===== -->
+        <div class="appendix-section">
+          <h2>🖥️ おまけ ― ターミナルから使える Copilot CLI</h2>
+          <p>
+            VS Code を開かずにターミナルだけで Copilot を使いたい場合は、GitHub
+            Copilot CLI を利用します。
+            コードの編集が主目的ではなく、汎用的なファイル操作を行いたいときに便利です（フォルダ内のファイル整理など）。
+          </p>
+
+          <ol class="op-steps" style="margin-bottom: 14px">
+            <li>
+              <div>
+                GitHub Copilot CLI をインストール（Windows の場合）
+                <pre><code>winget install GitHub.Copilot</code></pre>
+              </div>
+            </li>
+            <li>
+              <div>
+                ターミナルから Copilot CLI を起動
+                <pre><code>cd &lt;プロジェクトのルートディレクトリ&gt;
+copilot</code></pre>
+              </div>
+            </li>
+          </ol>
+
+          <p>
+            最初に GitHub
+            アカウントでサインインすると、チャット形式で指示を出せるようになります。
+          </p>
+
+          <p><strong style="color: #7eb8f7">使用例</strong></p>
+          <ul style="margin: 1em 2em">
+            <li>
+              <code
+                >ディレクトリ内の画像ファイルを img-0001.png、img-0002.png
+                のような連番にリネームして</code
+              >
+            </li>
+            <li>
+              <code>GitHub 上にリファクタリング用の Issue を作成して</code>
+            </li>
+            <li>
+              <code>Revert the last commit, leaving the changes unstaged</code>
+            </li>
+            <li><code>List my open PRs</code></li>
+          </ul>
+
+          <p>
+            <strong style="color: #7eb8f7">Claude Code をご利用の方へ</strong>
+          </p>
+          <p>
+            GitHub Copilot CLI の操作方法は Claude Code とほぼ同じです。
+            そのため、これまでのノウハウをそのまま活用できます。
+          </p>
+          <ul style="margin: 1em 2em">
+            <li><code>Shift + Tab</code> でモード切り替え</li>
+            <li><code>Esc</code> で割り込み指示</li>
+            <li><code>/</code> でスラッシュコマンドを入力</li>
+          </ul>
+        </div>
+      </main>
+
+      <footer class="footer">
+        GitHub Copilot ハンズオン ― Visual Studio Code で AI
+        支援開発を体験しよう
+      </footer>
+    </div>
+  </body>
+</html>

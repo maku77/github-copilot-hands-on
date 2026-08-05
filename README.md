@@ -229,7 +229,9 @@ applyTo: "**/*.py"
 - Keep each function focused on a single responsibility.
 
 ## Documentation
-- Add docstrings to all public functions and classes.
+- Every function, method, and class must have a **docstring**.
+- Put the **docstring** directly under `def` / `class` with triple double quotes.
+- Do not finish a Python edit if any added or modified function/method lacks at least a one-line **docstring**.
 - For non-trivial logic, add short comments explaining why, not what.
 ```
 
